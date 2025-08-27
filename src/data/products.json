@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "title": "Mouse",
+    "description": "Mouse óptico",
+    "code": "MOU-001",
+    "price": 4599,
+    "status": true,
+    "stock": 30,
+    "category": "perifericos",
+    "thumbnails": [
+      "imgs/mouse1.png"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Teclado Mae",
+    "description": "Teclado Mecánico",
+    "code": "TEC-001",
+    "price": 14999,
+    "status": true,
+    "stock": 55,
+    "category": "perifericos",
+    "thumbnails": [
+      "imgs/teclado1.png"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Teclado Basic",
+    "description": "Teclado Básico",
+    "code": "TEC-002",
+    "price": 4999,
+    "status": true,
+    "stock": 155,
+    "category": "perifericos",
+    "thumbnails": [
+      "imgs/teclado2.png"
+    ]
+  }
+]
