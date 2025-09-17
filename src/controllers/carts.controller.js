@@ -1,5 +1,5 @@
 import * as cartService from "../services/cart.service.js";
-import asyncHandler from "../utils/asyncHandler.js";
+import asyncHandler from "../middlewares/asyncHandler.js";
 
 export const getCartById = asyncHandler(async (req, res) => {
   const cart = await cartService.getById(req.params.cid);
@@ -19,3 +19,10 @@ export const addProductToCart = asyncHandler(async (req, res) => {
   const cart = await cartService.addProduct(cid, pid);
   res.json(cart);
 });
+
+export const removeProduct = asyncHandler(async (req, res) => {
+  const { cid, pid } = req.params;
+  const cart = await cartService.removeProduct(cid, pid);
+  res.json(cart);
+});
+

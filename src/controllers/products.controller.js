@@ -1,4 +1,4 @@
-import asyncHandler from "../utils/asyncHandler.js";
+import asyncHandler from "../middlewares/asyncHandler.js";
 import * as productService from "../services/product.service.js";
 
 export const list = asyncHandler(async (_req, res) => {
