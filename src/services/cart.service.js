@@ -1,5 +1,5 @@
 import { readJSON, writeJSON } from "../utils/fileDb.js";
-import { ProductManager } from "./ProductManager.js";
+import { ProductManager } from "./product.service.js";
 
 const CARTS_PATH = "data/carts.json";
 const productManager = new ProductManager();
