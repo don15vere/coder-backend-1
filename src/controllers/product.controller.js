@@ -1,26 +1,20 @@
-import asyncHandler from '../middlewares/asyncHandler.js';
-import productService from '../services/product.service.js';
+import asyncHandler from "../utils/asyncHandler.js";
+import * as productService from "../services/product.service.js";
+
 export const list = asyncHandler(async (_req, res) => {
-  const items = await productService.findAll();
-  res.json(items);
+  res.json(await productService.findAll());
 });
-
 export const getById = asyncHandler(async (req, res) => {
-  const item = await productService.findById(req.params.pid);
-  if (!item) return res.status(404).json({ error: 'Producto no encontrado' });
-  res.json(item);
+  const p = await productService.findById(req.params.pid);
+  if (!p) return res.status(404).json({ error: "Producto no encontrado" });
+  res.json(p);
 });
-
 export const create = asyncHandler(async (req, res) => {
-  const created = await productService.create(req.body);
-  res.status(201).json(created);
+  res.status(201).json(await productService.create(req.body));
 });
-
 export const update = asyncHandler(async (req, res) => {
-  const updated = await productService.update(req.params.pid, req.body);
-  res.json(updated);
+  res.json(await productService.update(req.params.pid, req.body));
 });
-
 export const remove = asyncHandler(async (req, res) => {
   await productService.remove(req.params.pid);
   res.status(204).end();
