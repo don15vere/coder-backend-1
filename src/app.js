@@ -1,39 +1,59 @@
 import express from 'express';
+import { createServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { engine } from 'express-handlebars';
-import routes from './routes/index.js';
-import logger from './middlewares/logger.js';
-import notFound from './middlewares/notFound.js';
-import errorHandler from './middlewares/errorHandler.js';
+import exphbs from 'express-handlebars';
+
+// Rutas de vistas
+import viewsRouter from './routes/views.routes.js';
+
+// Routas API 
+import productsApiRouter from './routes/api/products.api.js';
+import cartsApiRouter from './routes/api/carts.api.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const httpServer = createServer(app);
+const io = new SocketIOServer(httpServer);
 
-// Middlewares para parsear JSON y forms
+// --------- Middlewares base ----------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/public', express.static(path.join(__dirname, '../public')));
 
-// Static
-app.use(express.static(path.join(__dirname, 'public')));
+// --------- Handlebars ----------
+app.engine('handlebars', exphbs.engine());
+app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname, '../views'));
 
-// Logger simple
-app.use(logger);
+// --------- Rutas ----------
+app.use('/', viewsRouter);
 
-// Handlebars
-app.engine('hbs', engine({
-  extname: '.hbs',
-}));
-app.set('view engine', 'hbs');
-app.set('views', path.join(__dirname, 'views'));
+app.use('/api/products', productsApiRouter);
+app.use('/api/carts', cartsApiRouter);
 
-// Rutas
-app.use('/', routes);
+// --------- Socket.IO ----------
+io.on('connection', (socket) => {
+  // Chat simple
+  socket.on('chat:message', (data) => {
+    // reenvío a todos
+    io.emit('chat:message', data);
+  });
 
-// 404 y errores
-app.use(notFound);
-app.use(errorHandler);
+  // Realtime products: alguien creó/eliminó -> avisamos a todos para refrescar
+  socket.on('products:changed', () => {
+    io.emit('products:update');
+  });
+});
 
-export default app;
+// io accesible desde req.app.get('io')
+app.set('io', io);
+
+// --------- Start ----------
+const PORT = process.env.PORT || 8080;
+httpServer.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});
