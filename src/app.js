@@ -52,8 +52,5 @@ io.on('connection', (socket) => {
 // io accesible desde req.app.get('io')
 app.set('io', io);
 
-// --------- Start ----------
-const PORT = process.env.PORT || 8080;
-httpServer.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+export { httpServer, io };
+export default app;
