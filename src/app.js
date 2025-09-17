@@ -1,6 +1,14 @@
-import express from "express";
-import productsRouter from "./routes/products.routes.js";
-import cartsRouter from "./routes/carts.routes.js";
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { engine } from 'express-handlebars';
+import routes from './routes/index.js';
+import logger from './middlewares/logger.js';
+import notFound from './middlewares/notFound.js';
+import errorHandler from './middlewares/errorHandler.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -8,16 +16,24 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routers
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
+// Static
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Healthcheck básico
-app.get("/", (_req, res) => {
-  res.json({ ok: true, message: "API Backend I - Entrega 1" });
-});
+// Logger simple
+app.use(logger);
 
-const PORT = 8080;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+// Handlebars
+app.engine('hbs', engine({
+  extname: '.hbs',
+}));
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Rutas
+app.use('/', routes);
+
+// 404 y errores
+app.use(notFound);
+app.use(errorHandler);
+
+export default app;
