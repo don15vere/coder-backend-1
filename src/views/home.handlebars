@@ -1,0 +1,35 @@
+<h1>Home</h1>
+<p class="muted">Lista de productos (renderizada en el cliente)</p>
+<hr />
+
+<div id="home-products" class="grid"></div>
+
+<script>
+  async function loadProducts() {
+    try {
+      const res = await fetch('/api/products');
+      const data = await res.json();
+      const list = Array.isArray(data?.payload) ? data.payload : (Array.isArray(data) ? data : []);
+      const container = document.getElementById('home-products');
+      container.innerHTML = '';
+      for (const p of list) {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div class="row" style="justify-content:space-between;">
+            <strong>${p.title ?? ''}</strong>
+            <span class="muted">${p.code ?? ''}</span>
+          </div>
+          <div class="muted">${p.description ?? ''}</div>
+          <div class="row" style="justify-content:space-between;margin-top:8px;">
+            <span>$ ${p.price ?? ''} · Stock: ${p.stock ?? ''} · ${p.category ?? ''}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  loadProducts();
+</script>

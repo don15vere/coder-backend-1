@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>{{#if title}}{{title}} — {{/if}}Backend I</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://cdn.socket.io" />
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif; margin: 0; padding: 0; background: #0f172a; color: #e2e8f0; }
+    header, footer { background: #111827; padding: 12px 16px; }
+    a { color: #93c5fd; text-decoration: none; }
+    main { padding: 16px; max-width: 1100px; margin: 0 auto; }
+    .container { display: grid; gap: 12px; }
+    .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    input, select, button, textarea { background: #0b1220; border: 1px solid #1f2937; color: #e5e7eb; border-radius: 10px; padding: 10px; }
+    button { cursor: pointer; }
+    .danger { background: #7f1d1d; border-color: #991b1b; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .muted { color: #94a3b8; }
+    .ok { color: #86efac; }
+    .error { color: #fca5a5; }
+    hr { border: none; border-top: 1px solid #273449; margin: 12px 0; }
+    nav a { margin-right: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/realtimeproducts">Realtime Products</a>
+      <a href="/chat">Chat</a>
+    </nav>
+  </header>
+  <main>
+    {{{body}}}
+  </main>
+  <footer class="muted">
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;">
+      <span>Backend I — Clase 6</span>
+      <span>Socket.IO + Handlebars</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-Zmdr3fT6QdFJ6qM8DCRvVv4j3ChJbP+8MmpgQvD6f+7b8JrWw0aXrQyG7xwq9sMz" crossorigin="anonymous"></script>
+</body>
+</html>

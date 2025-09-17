@@ -1,0 +1,13 @@
+<div class="card">
+  <div class="row" style="justify-content:space-between;">
+    <strong>{{title}}</strong>
+    <span class="muted">{{code}}</span>
+  </div>
+  <div class="muted">{{description}}</div>
+  <div class="row" style="justify-content:space-between;margin-top:8px;">
+    <span>$ {{price}} · Stock: {{stock}} · {{category}}</span>
+    {{#if id}}
+      <button class="danger" data-action="delete" data-id="{{id}}">Eliminar</button>
+    {{/if}}
+  </div>
+</div>

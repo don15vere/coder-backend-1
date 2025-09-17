@@ -1,0 +1,30 @@
+<h1>Realtime Products</h1>
+<p class="muted">Alta/baja y actualización en vivo con Socket.IO</p>
+<hr />
+
+<div class="container">
+  <div class="card">
+    <h3>Crear producto</h3>
+    <form id="create-form" class="container" style="grid-template-columns:1fr;">
+      <div class="row">
+        <input name="title" placeholder="Título" required />
+        <input name="code" placeholder="Código" required />
+        <input name="price" placeholder="Precio" type="number" required />
+      </div>
+      <div class="row">
+        <input name="stock" placeholder="Stock" type="number" required />
+        <input name="category" placeholder="Categoría" required />
+      </div>
+      <textarea name="description" rows="3" placeholder="Descripción"></textarea>
+      <button type="submit">Crear</button>
+      <div id="create-status" class="muted"></div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Listado (vivo)</h3>
+    <div id="rt-products" class="grid"></div>
+  </div>
+</div>
+
+<script src="/public/js/realtime.js"></script>
