@@ -1,0 +1,11 @@
+{{!< layouts/main}}
+<h1>{{title}}</h1>
+{{#if cart}}
+  <ul>
+    {{#each cart.products}}
+      <li>{{this.product.title}} x {{this.quantity}}</li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p>Carrito vacío o inexistente.</p>
+{{/if}}

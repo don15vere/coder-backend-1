@@ -1,0 +1,10 @@
+{{!< layouts/main}}
+<h1>{{title}}</h1>
+<ul>
+  {{#each products}}
+    <li>
+      <strong>{{this.title}}</strong> — ${{this.price}}
+      <a href="/products/{{this._id}}">Ver</a>
+    </li>
+  {{/each}}
+</ul>
