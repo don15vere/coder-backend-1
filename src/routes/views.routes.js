@@ -16,11 +16,4 @@ router.get('/realtimeproducts', async (req, res) => {
   });
 });
 
-// Chat global simple
-router.get('/chat', (req, res) => {
-  res.render('chat', {
-    title: 'Chat',
-  });
-});
-
 export default router;
