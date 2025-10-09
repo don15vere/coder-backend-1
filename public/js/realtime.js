@@ -12,7 +12,7 @@ function normalizeList(data) {
 
 async function loadProducts() {
   try {
-    const res = await fetch('/api/products');
+    const res = await fetch('/api/products?limit=8&page=1&sort=live');
     const data = await res.json();
     const products = normalizeList(data);
     renderList(products);
@@ -28,7 +28,9 @@ function renderList(products) {
     card.className = 'card';
     card.innerHTML = `
       <div class="row" style="justify-content:space-between;">
-        <strong>${p.title ?? ''}</strong>
+        <a href="/products/${p._id}" style="text-decoration:none; color:inherit">
+            ${p.title ?? ''}
+            </a>
         <span class="muted">${p.code ?? ''}</span>
       </div>
       <div class="muted">${p.description ?? ''}</div>
@@ -50,8 +52,8 @@ $list?.addEventListener('click', async (e) => {
   try {
     const res = await fetch(`/api/products/${encodeURIComponent(id)}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Error al eliminar');
-    // Se avisa por socket que cambiaron los productos
     socket.emit('products:changed');
+    loadProducts(); // NEW: refrescar inmediatamente sin depender del server
   } catch (err) {
     console.error(err);
   }
@@ -62,9 +64,17 @@ $form?.addEventListener('submit', async (e) => {
   $status.textContent = 'Creando...';
   const fd = new FormData($form);
   const payload = Object.fromEntries(fd.entries());
-  // casteos mínimos
+
+  // --- casteos mínimos ---
   if (payload.price) payload.price = Number(payload.price);
   if (payload.stock) payload.stock = Number(payload.stock);
+  payload.status = fd.get('status') !== null; // NEW: checkbox -> boolean
+  if (payload.thumbnails) {                    // NEW: string -> array
+    payload.thumbnails = payload.thumbnails
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
 
   try {
     const res = await fetch('/api/products', {
@@ -72,14 +82,15 @@ $form?.addEventListener('submit', async (e) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error || 'Error al crear');
-    }
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out?.message || out?.error || 'Error al crear');
+
     $form.reset();
     $status.textContent = '✅ Producto creado';
-    // Se avisa por socket que cambiaron los productos
+
     socket.emit('products:changed');
+    loadProducts(); // NEW: refrescar lista aunque el server no emita nada
+
     setTimeout(() => ($status.textContent = ''), 1500);
   } catch (err) {
     console.error(err);
@@ -89,6 +100,9 @@ $form?.addEventListener('submit', async (e) => {
 
 // Cuando el server avisa, se recargan los productos
 socket.on('products:update', loadProducts);
+
+socket.on('products:created', loadProducts);
+socket.on('products:changed', loadProducts);
 
 // primera carga
 loadProducts();

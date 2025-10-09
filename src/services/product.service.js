@@ -1,83 +1,56 @@
-import { readJSON, writeJSON } from "../utils/fileDb.js";
+import Product from '../models/product.model.js';
 
-const PRODUCTS_PATH = "data/products.json";
-const REQUIRED_FIELDS = ["title", "description", "code", "price", "stock", "category"];
+/**
+ * GET /api/products
+ * Soporta: ?limit=10&page=1&sort=asc|desc&query=<categoria|disponible|no disponible>
+ * - sort: por price
+ * - query: si es disponible/no disponible => stock; si no => category exacta
+ */
+export async function findAll({ limit = 10, page = 1, sort, query } = {}) {
+  const lim = Math.max(1, Number(limit) || 10);
+  const pg  = Math.max(1, Number(page) || 1);
 
-async function _getAll() {
-  return await readJSON(PRODUCTS_PATH, []);
-}
-async function _saveAll(list) {
-  await writeJSON(PRODUCTS_PATH, list);
-}
-
-export async function findAll() {
-  return _getAll();
-}
-
-export async function findById(id) {
-  const all = await _getAll();
-  return all.find(p => String(p.id) === String(id)) || null;
-}
-
-export async function create(data) {
-  for (const f of REQUIRED_FIELDS) {
-    if (data[f] === undefined) {
-      const err = new Error(`El siguiente campo es obligatorio: ${f}`);
-      err.status = 400;
-      throw err;
-    }
+  const filter = {};
+  if (query) {
+    const q = String(query).toLowerCase();
+    if (q === 'disponible' || q === 'true' || q === '1') filter.stock = { $gt: 0 };
+    else if (q === 'no disponible' || q === 'false' || q === '0') filter.stock =  { $lte: 0 };
+    else filter.category = query; // categoría exacta
   }
 
-  const all = await _getAll();
-  const nextId = (all.reduce((m, p) => Math.max(m, Number(p.id) || 0), 0) || 0) + 1;
+  const sortObj = {};
+  if (sort && ['asc','desc'].includes(String(sort).toLowerCase())) {
+    sortObj.price = sort.toLowerCase() === 'asc' ? 1 : -1;
+  } else if (sort && sort == 'live') {
+    sortObj.createdAt = -1; // los más nuevos primero
+  }
 
-  const product = {
-    id: nextId,
-    title: String(data.title),
-    description: String(data.description),
-    code: String(data.code),
-    price: Number(data.price),
-    status: data.status === undefined ? true : Boolean(data.status),
-    stock: Number(data.stock),
-    category: String(data.category),
-    thumbnails: Array.isArray(data.thumbnails) ? data.thumbnails.map(String) : []
+
+  const [totalDocs, docs] = await Promise.all([
+    Product.countDocuments(filter),
+    Product.find(filter).sort(sortObj).skip((pg - 1) * lim).limit(lim).lean()
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(totalDocs / lim));
+
+  const status = totalDocs <= 0 ? 'error' : 'success';
+  return {
+    status: status,
+    payload: docs,
+    totalDocs,
+    totalPages,
+    page: pg,
+    limit: lim,
+    hasPrevPage: pg > 1,
+    hasNextPage: pg < totalPages,
+    prevPage: pg > 1 ? pg - 1 : null,
+    nextPage: pg < totalPages ? pg + 1 : null
   };
-
-  all.push(product);
-  await _saveAll(all);
-  return product;
 }
 
-export async function update(id, updates = {}) {
-  const all = await _getAll();
-  const idx = all.findIndex(p => String(p.id) === String(id));
-  if (idx === -1) {
-    const err = new Error("Producto no encontrado");
-    err.status = 404;
-    throw err;
-  }
-
-  // evitar tocar id
-  // eslint-disable-next-line no-unused-vars
-  const { id: _ignore, ...rest } = updates;
-
-  const updated = { ...all[idx], ...rest };
-  all[idx] = updated;
-  await _saveAll(all);
-  return updated;
+export async function findById(id) { return Product.findById(id).lean(); }
+export async function create(data)  { return Product.create(data); }
+export async function update(id, data) {
+  return Product.findByIdAndUpdate(id, data, { new: true, runValidators: true, lean: true });
 }
-
-export async function remove(id) {
-  const all = await _getAll();
-  const idx = all.findIndex(p => String(p.id) === String(id));
-  if (idx === -1) {
-    const err = new Error("Producto no encontrado");
-    err.status = 404;
-    throw err;
-  }
-  const [removed] = all.splice(idx, 1);
-  await _saveAll(all);
-  return removed;
-}
-
-export default { findAll, findById, create, update, remove };
+export async function remove(id) { return Product.findByIdAndDelete(id).lean(); }

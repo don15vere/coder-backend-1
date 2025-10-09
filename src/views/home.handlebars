@@ -17,7 +17,9 @@
         div.className = 'card';
         div.innerHTML = `
           <div class="row" style="justify-content:space-between;">
-            <strong>${p.title ?? ''}</strong>
+            <a href="/products/${p._id}" style="text-decoration:none; color:inherit">
+            ${p.title ?? ''}
+            </a>
             <span class="muted">${p.code ?? ''}</span>
           </div>
           <div class="muted">${p.description ?? ''}</div>

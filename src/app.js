@@ -51,6 +51,6 @@ io.on('connection', (socket) => {
 
 // io accesible desde req.app.get('io')
 app.set('io', io);
-
-export { httpServer, io };
-export default app;
+export default httpServer; 
+// export { httpServer, io };
+// export default app;

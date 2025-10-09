@@ -1,0 +1,13 @@
+<div class="card">
+  <div class="row" style="justify-content:space-between;">
+    <strong>{{product.title}}</strong>
+    <span class="muted">{{product.code}}</span>
+  </div>
+  <div class="muted">{{product.description}}</div>
+  <div class="row" style="justify-content:space-between;margin-top:8px;">
+    <span>$ {{product.price}} · Stock: {{product.stock}} · {{product.category}}</span>
+    {{#if product._id}}
+      <button data-pid="${p._id}">Agregar al carrito</button>
+    {{/if}}
+  </div>
+</div>
