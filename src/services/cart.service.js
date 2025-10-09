@@ -61,6 +61,9 @@ export async function updateProductQuantity(cid, pid, quantity) {
   const item = cart.products.find(p => String(p.product) === String(pid));
   if (!item) return null;
 
+  if (!quantity || isNaN(quantity) || Number(quantity) < 1) {
+    quantity = item.quantity + 1;
+  }
   item.quantity = Math.max(1, Number(quantity) || 1);
   await cart.save();
   return getCartById(cid);

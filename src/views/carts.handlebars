@@ -1,0 +1,36 @@
+<h1 class="text-center mb-4">Listado de Carritos</h1>
+
+<div class="cart-grid">
+  {{#each carts}}
+    <div class="cart-card">
+      <h3>🛒 Carrito ID: {{this.id}}</h3>
+      <p>Cantidad de productos: {{this.count}}</p>
+      <a class="btn" href="/carts/{{this.id}}">Ver carrito</a>
+    </div>
+  {{/each}}
+</div>
+
+<style>
+.cart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 2rem;
+}
+.cart-card {
+  border: 1px solid #ddd;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border-radius: 0.5rem;
+  text-decoration: none;
+}
+.btn:hover { background: #0056b3; }
+</style>
